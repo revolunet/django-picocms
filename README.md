@@ -1,4 +1,3 @@
-
 django-picocms
 ================
 
@@ -13,22 +12,24 @@ You need to organise various models in several categories/sub categories via the
  - add `picocms` to your `INSTALLED_APPS`
  - include picocms urls to your `urls.py` if you want to publish your models
 
+in urls.py :
 
     urlpatterns += patterns('',
         url(r'', include('picocms.urls'))
     )
 
-
  - create your models based on the `CMSModel` abstract class
 
  - register your models for the admin :
+
+in admin.py :
 
     admin.site.register(MyModel, picocms.admin.CMSModelAdmin)
 
  - you'll need [django-mptt][0]
 
 
-## What you get for free :
+## What you'll get for free :
 
  - Unlimited categories to organise your models with a simple AdminTreeView for categories ([django-mptt][0] based and no d&d yet)
  - `CMSModel` abstract fields : active, anonymous_access, created, modified, modified_by, position, category, title and slug
