@@ -9,6 +9,7 @@ You need to organise various models in several categories/sub categories via the
 
 ## Installation :
 
+ - install with `pip install git+https://github.com/revolunet/django-picocms.git`
  - add `picocms` to your `INSTALLED_APPS`
  - include picocms urls to your `urls.py` if you want to publish your models
 
