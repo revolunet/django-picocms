@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.forms.models import ModelMultipleChoiceField
 from mptt.admin import MPTTModelAdmin
+from mptt.forms import TreeNodeChoiceField
 import models
 
 #
@@ -29,15 +30,26 @@ class CMSModelAdmin(admin.ModelAdmin):
         obj.save()
 
     def get_form(self, request, obj=None, **kwargs):
+        """ removes self entries in related M2M fields """
         form = super(CMSModelAdmin, self).get_form(request, obj, **kwargs)
         if obj and obj.pk:
-            # remove self entries in related M2M fields
             for field, field_def in form.base_fields.items():
                 if isinstance(field_def, ModelMultipleChoiceField):
                     if getattr(obj, field).model == self.model:
                         form.base_fields[field].queryset = form.base_fields[field].queryset.exclude(pk=obj.pk)
-
         return form
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """ replaces any MPTTModel FK with a special combo """
+        from mptt.models import MPTTModel, TreeForeignKey
+        if issubclass(db_field.rel.to, MPTTModel) \
+                and not isinstance(db_field, TreeForeignKey) \
+                and not db_field.name in self.raw_id_fields:
+            queryset = db_field.rel.to.objects.all()
+            defaults = dict(form_class=TreeNodeChoiceField, queryset=queryset)
+            defaults.update(kwargs)
+            kwargs = defaults
+        return super(CMSModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class CategoryAdmin(MPTTModelAdmin):
