@@ -41,6 +41,7 @@ in admin.py :
 
 ## Todo :
 
+ - move up/down entry in the TreeAdmin
  - move to CBV style
  - better admin UI for categories/entries management
  - template tags for HTML fragment
