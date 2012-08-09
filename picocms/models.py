@@ -50,7 +50,7 @@ class CMSModel(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        link = ('simplecms-view-detail', [self._meta.app_label, self.__class__.__name__, self.slug])
+        link = ('picocms-view-detail', [self._meta.app_label, self.__class__.__name__, self.slug])
         return link
 
     def render(self, request):

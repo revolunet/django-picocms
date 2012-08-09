@@ -1,5 +1,5 @@
 
-django-simplecms
+django-picocms
 ================
 
 This simple CMS can manage any model and organise them in various categories.
@@ -10,12 +10,12 @@ You need to organise various models in several categories/sub categories via the
 
 ## Installation :
 
- - add `simplecms` to your `INSTALLED_APPS`
- - include simplecms urls to your `urls.py` if you want to publish your models
+ - add `picocms` to your `INSTALLED_APPS`
+ - include picocms urls to your `urls.py` if you want to publish your models
 
 
     urlpatterns += patterns('',
-        url(r'', include('simplecms.urls'))
+        url(r'', include('picocms.urls'))
     )
 
 
@@ -23,7 +23,7 @@ You need to organise various models in several categories/sub categories via the
 
  - register your models for the admin :
 
-    admin.site.register(MyModel, simplecms.admin.CMSModelAdmin)
+    admin.site.register(MyModel, picocms.admin.CMSModelAdmin)
 
  - you'll need [django-mptt][0]
 
@@ -33,7 +33,7 @@ You need to organise various models in several categories/sub categories via the
  - Unlimited categories to organise your models with a simple AdminTreeView for categories ([django-mptt][0] based and no d&d yet)
  - `CMSModel` abstract fields : active, anonymous_access, created, modified, modified_by, position, category, title and slug
  - Easy instance rendering. Juste define `modelName.html` template and your instance will use it to render itself with the permalink.
- - basic `HTMLField` and `HTMLBigField` for your models with tinyMCE
+ - Basic `HTMLField` and `HTMLBigField` for your models with tinyMCE
  - South support
 
 

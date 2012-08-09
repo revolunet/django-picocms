@@ -19,7 +19,7 @@ class HTMLBigField(HTMLField):
 try:
     # in case south is installed
     from south.modelsinspector import add_introspection_rules
-    add_introspection_rules([], ["^simplecms\.fields\.HTMLField"])
-    add_introspection_rules([], ["^simplecms\.fields\.HTMLBigField"])
+    add_introspection_rules([], ["^picocms\.fields\.HTMLField"])
+    add_introspection_rules([], ["^picocms\.fields\.HTMLBigField"])
 except:
     pass
