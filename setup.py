@@ -13,7 +13,7 @@ setup(
     author_email = 'julien@revolunet.com',
     url = 'http://github.com/revolunet/django-picocms',
     packages=['picocms'],
-    package_data={'picocms': ['static/*']},
+    package_data={'picocms': ['static']},
     install_requires=[
         'Django>=1.3.1,<1.5',
         'south>=0.7.2',
