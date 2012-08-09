@@ -18,6 +18,7 @@ setup(
         'south>=0.7.2',
         'django-mptt>=0.5.1,<0.6'
     ],
+    include_package_data = True,
     classifiers = ['Development Status :: 4 - Beta',
                    'Environment :: Web Environment',
                    'Framework :: Django',
