@@ -1,5 +1,4 @@
 
-
 django.jQuery(function() {
     function loadLongEditors() {
         // long editors
@@ -16,7 +15,7 @@ django.jQuery(function() {
         editor_selector : "mceEditor",
         width: 800,
         height:200,
-        theme_advanced_buttons1 : "bold,italic,underline,separator,strikethrough,justifyleft,justifycenter,justifyright,justifyfull,bullist,numlist,undo,redo,link,unlink",
+        theme_advanced_buttons1 : "bold,italic,underline,separator,justifyleft,justifycenter,justifyright,justifyfull,separator,bullist,numlist,outdent,indent,separator,link,unlink,forecolor,backcolor,hr,removeformat,separator,undo,redo",
         theme_advanced_buttons2 : "",
         theme_advanced_buttons3 : "",
         theme_advanced_toolbar_location : "top",
