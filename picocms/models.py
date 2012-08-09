@@ -35,7 +35,7 @@ class CMSModel(models.Model):
         Any model inheriting from
     """
     active = models.BooleanField(default=True)
-    anonymous_access = models.BooleanField(default=True, verbose_name=u'Allow anonymous acess')
+    anonymous_access = models.BooleanField(default=True, verbose_name=u'Allow anonymous access')
     created = models.DateTimeField(auto_now_add=True)
     modified_by = models.ForeignKey(User, null=True, editable=False)
     modified = models.DateTimeField(auto_now=True)
