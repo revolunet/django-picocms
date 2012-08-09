@@ -9,6 +9,10 @@ import models
 
 
 class CMSModelAdmin(admin.ModelAdmin):
+    """ This ModelAdmin adds tinyMce for HTMLField and HTMLBigField.
+        We also remove any reference to self in the many to many fields.
+        I don't ever want to link to myself, do i ?
+    """
     list_display = ['__unicode__', 'category', 'position', 'active', 'anonymous_access']
     prepopulated_fields = {"slug": ("title",)}
 
@@ -37,6 +41,7 @@ class CMSModelAdmin(admin.ModelAdmin):
 
 
 class CategoryAdmin(MPTTModelAdmin):
+    """ MPTT based Admin class to display and manage CMS categories """
     list_display = ['title', 'position']
 
     def get_form(self, request, obj=None, **kwargs):
