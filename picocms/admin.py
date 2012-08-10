@@ -20,7 +20,8 @@ class AdminCategoryFilter(SimpleListFilter):
     parameter_name = 'category'
 
     def lookups(self, request, model_admin):
-        return model_admin.queryset(request).values_list('category__pk', 'category__title')
+        res = model_admin.queryset(request).values_list('category__pk', 'category__title').order_by('category').distinct().order_by()
+        return res
 
     def queryset(self, request, queryset):
         if request.GET.get('category'):
