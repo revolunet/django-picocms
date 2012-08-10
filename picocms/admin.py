@@ -2,6 +2,9 @@ from django.contrib import admin
 from django.forms.models import ModelMultipleChoiceField
 from mptt.admin import MPTTModelAdmin
 from mptt.forms import TreeNodeChoiceField
+from django.contrib.admin import SimpleListFilter
+from django.contrib.admin import DateFieldListFilter
+
 import models
 
 #
@@ -9,12 +12,32 @@ import models
 #
 
 
+class AdminCategoryFilter(SimpleListFilter):
+    """ Filter models by category
+        Only show categories with active models
+    """
+    title = 'CMS Category'
+    parameter_name = 'category'
+
+    def lookups(self, request, model_admin):
+        return model_admin.queryset(request).values_list('category__pk', 'category__title')
+
+    def queryset(self, request, queryset):
+        if request.GET.get('category'):
+            return queryset.filter(category__pk=request.GET.get('category'))
+        return queryset
+
+
 class CMSModelAdmin(admin.ModelAdmin):
     """ This ModelAdmin adds tinyMce for HTMLField and HTMLBigField.
         We also remove any reference to self in the many to many fields.
         I don't ever want to link to myself, do i ?
+        We also add some CMS related filters and search fields
     """
     list_display = ['__unicode__', 'category', 'position', 'active', 'anonymous_access']
+    list_filter = (AdminCategoryFilter, 'active', 'anonymous_access', ('modified', DateFieldListFilter))
+    search_fields = ['category__title', 'title']
+    #list_editable = ['category']
     prepopulated_fields = {"slug": ("title",)}
 
     class Media:
