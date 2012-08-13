@@ -30,6 +30,15 @@ class CMSCategory(MPTTModel):
         verbose_name_plural = 'categories'
 
 
+class ActiveModelManager(models.Manager):
+    def for_user(self, user):
+        """ check if model is active and accessible """
+        qs = super(ActiveModelManager, self).get_query_set().filter(active=True)
+        if user.is_anonymous():
+            qs = qs.filter(anonymous_access=True)
+        return qs
+
+
 class CMSModel(models.Model):
     """ Abstract model with generic fields to handle content management in categories.
         Any model inheriting from
@@ -43,6 +52,8 @@ class CMSModel(models.Model):
     category = models.ForeignKey(CMSCategory)
     slug = models.SlugField(db_index=True, unique=True, verbose_name=u'Unique url code')
     title = models.CharField(max_length=100)
+
+    objects = ActiveModelManager()
 
     class Meta:
         abstract = True
@@ -67,12 +78,10 @@ class CMSModel(models.Model):
     @classmethod
     def _get_instance(cls, request, slug):
         """ check if instance exists and is accessible and returns it """
-        instance = get_object_or_404(cls, slug=slug)
-        if request.user.is_anonymous() and instance.anonymous_access is False:
-            raise Http404
-        if not instance.active:
-            raise Http404
-        return instance
+        try:
+            return cls.objects.for_user(request.user).get(slug=slug)
+        except cls.DoesNotExist:
+            raise Http404('No %s matches the given query.' % cls._meta.object_name)
 
     @classmethod
     def get_response(cls, request, slug):
