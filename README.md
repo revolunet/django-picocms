@@ -42,9 +42,9 @@ in admin.py :
 ## Todo :
 
  - move up/down entry in the TreeAdmin
- - move to CBV style
  - better admin UI for categories/entries management
  - template tags for HTML fragment
+ - move to CBV style (or not)
 
 
  [0]: https://github.com/django-mptt/django-mptt/
