@@ -46,7 +46,7 @@ class CMSModel(models.Model):
     active = models.BooleanField(default=True)
     anonymous_access = models.BooleanField(default=True, verbose_name=u'Allow anonymous access')
     created = models.DateTimeField(auto_now_add=True)
-    modified_by = models.ForeignKey(User, null=True, editable=False)
+    modified_by = models.ForeignKey(User, null=True, editable=False, on_delete=models.SET_NULL)
     modified = models.DateTimeField(auto_now=True)
     position = models.IntegerField(default=0)
     category = models.ForeignKey(CMSCategory, null=True, blank=True, on_delete=models.SET_NULL)
