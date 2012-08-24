@@ -49,7 +49,7 @@ class CMSModel(models.Model):
     modified_by = models.ForeignKey(User, null=True, editable=False)
     modified = models.DateTimeField(auto_now=True)
     position = models.IntegerField(default=0)
-    category = models.ForeignKey(CMSCategory)
+    category = models.ForeignKey(CMSCategory, null=True, blank=True, on_delete=models.SET_NULL)
     slug = models.SlugField(db_index=True, unique=True, verbose_name=u'Unique url code')
     title = models.CharField(max_length=100)
 
