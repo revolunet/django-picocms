@@ -2,9 +2,8 @@ from django.contrib import admin
 from django.forms.models import ModelMultipleChoiceField
 from mptt.admin import MPTTModelAdmin
 from mptt.forms import TreeNodeChoiceField
-from django.contrib.admin import SimpleListFilter
-from django.contrib.admin import DateFieldListFilter
-
+from django.contrib.admin import SimpleListFilter, DateFieldListFilter
+from django.forms.widgets import SelectMultiple
 import models
 
 #
@@ -38,15 +37,15 @@ class CMSModelAdmin(admin.ModelAdmin):
     list_display = ['__unicode__', 'category', 'position', 'active', 'anonymous_access']
     list_filter = (AdminCategoryFilter, 'active', 'anonymous_access', ('modified', DateFieldListFilter))
     search_fields = ['category__title', 'title']
-    #list_editable = ['category']
     prepopulated_fields = {"slug": ("title",)}
 
     class Media:
         js = ('/static/tiny_mce/tiny_mce.js',
-                '/static/js/admin-tinymce.js',
+                '/static/chosen/js/chosen.jquery.min.js',
+                '/static/js/admin.js',
               )
         css = {
-            'all': ('/static/css/admin-tinymce.css', )
+            'all': ('/static/chosen/css/chosen.css', '/static/css/admin.css')
         }
 
     def save_model(self, request, obj, form, change):
@@ -63,9 +62,15 @@ class CMSModelAdmin(admin.ModelAdmin):
                         form.base_fields[field].queryset = form.base_fields[field].queryset.exclude(pk=obj.pk)
         return form
 
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        kwargs['widget'] = SelectMultiple(attrs={'class': 'chosen-multiple', 'style': 'width:300px'})
+        kwargs['help_text'] = ''
+        return super(CMSModelAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """ replaces any MPTTModel FK with a special combo """
         from mptt.models import MPTTModel, TreeForeignKey
+
         if issubclass(db_field.rel.to, MPTTModel) \
                 and not isinstance(db_field, TreeForeignKey) \
                 and not db_field.name in self.raw_id_fields:

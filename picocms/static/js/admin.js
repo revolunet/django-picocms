@@ -31,6 +31,8 @@ django.jQuery(function() {
     else {
         loadLongEditors();
     }
-    
+
+    django.jQuery('.chosen-multiple').chosen();
+    django.jQuery('.chosen-multiple ~ a.add-another').hide();
 
 });
