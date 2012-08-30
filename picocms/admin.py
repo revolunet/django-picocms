@@ -59,7 +59,9 @@ class CMSModelAdmin(admin.ModelAdmin):
             for field, field_def in form.base_fields.items():
                 if isinstance(field_def, ModelMultipleChoiceField):
                     if getattr(obj, field).model == self.model:
-                        form.base_fields[field].queryset = form.base_fields[field].queryset.exclude(pk=obj.pk)
+                        form.base_fields[field].queryset = form.base_fields[field].queryset.exclude(pk=obj.pk).order_by('title', '-pk')
+                    elif issubclass(getattr(obj, field).model, models.CMSModel):
+                        form.base_fields[field].queryset = form.base_fields[field].queryset.order_by('title', '-pk')
         return form
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
