@@ -128,6 +128,7 @@
 			link : ['link_desc', 'mceLink'],
 			unlink : ['unlink_desc', 'unlink'],
 			image : ['image_desc', 'mceImage'],
+			imagecms : ['image_desc', 'mceImageCms'],
 			cleanup : ['cleanup_desc', 'mceCleanup'],
 			help : ['help_desc', 'mceHelp'],
 			code : ['code_desc', 'mceCodeEditor'],
@@ -148,11 +149,12 @@
 
 		stateControls : ['bold', 'italic', 'underline', 'strikethrough', 'bullist', 'numlist', 'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', 'sub', 'sup', 'blockquote'],
 
-		init : function(ed, url) {
+		init : function(ed, url, imageChoooserUrl) {
 			var t = this, s, v, o;
 	
 			t.editor = ed;
 			t.url = url;
+			t.imageChoooserUrl = imageChoooserUrl;
 			t.onResolveName = new tinymce.util.Dispatcher(this);
 			s = ed.settings;
 
@@ -1430,6 +1432,24 @@
 				width : 355 + parseInt(ed.getLang('advanced.image_delta_width', 0)),
 				height : 275 + parseInt(ed.getLang('advanced.image_delta_height', 0)),
 				inline : true
+			}, {
+				theme_url : this.url
+			});
+		},
+
+		_mceImageCms : function(ui, val) {
+			var ed = this.editor;
+
+			// Internal image object like a flash placeholder
+			if (ed.dom.getAttrib(ed.selection.getNode(), 'class', '').indexOf('mceItem') != -1)
+				return;
+
+			ed.windowManager.open({
+				url : this.imageChoooserUrl,
+				width : 355 + parseInt(ed.getLang('advanced.image_delta_width', 0)),
+				height : 275 + parseInt(ed.getLang('advanced.image_delta_height', 0)),
+				inline : true,
+				name : ed.id 
 			}, {
 				theme_url : this.url
 			});

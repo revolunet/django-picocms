@@ -4,6 +4,7 @@ from mptt.admin import MPTTModelAdmin
 from mptt.forms import TreeNodeChoiceField
 from django.contrib.admin import SimpleListFilter, DateFieldListFilter
 from django.forms.widgets import SelectMultiple
+from django.core.urlresolvers import reverse_lazy
 import models
 
 #
@@ -40,7 +41,7 @@ class CMSModelAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
 
     class Media:
-        js = ('/static/tiny_mce/tiny_mce.js',
+        js = (
                 '/static/chosen/js/chosen.jquery.min.js',
                 '/static/js/admin.js',
               )
@@ -54,11 +55,15 @@ class CMSModelAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         """ removes self entries in related M2M fields """
+        # todo : check HTML fields before this
+        tinymce_path = reverse_lazy('picocms-tinymcejs', args=(self.model._meta.app_label, self.model._meta.object_name))
+        if not tinymce_path in self.Media.js:
+            self.Media.js = [tinymce_path] + list(self.Media.js)
         form = super(CMSModelAdmin, self).get_form(request, obj, **kwargs)
-        if obj and obj.pk:
+        if obj:
             for field, field_def in form.base_fields.items():
                 if isinstance(field_def, ModelMultipleChoiceField):
-                    if getattr(obj, field).model == self.model:
+                    if obj.pk and getattr(obj, field).model == self.model:
                         form.base_fields[field].queryset = form.base_fields[field].queryset.exclude(pk=obj.pk).order_by('title', '-pk')
                     elif issubclass(getattr(obj, field).model, models.CMSModel):
                         form.base_fields[field].queryset = form.base_fields[field].queryset.order_by('title', '-pk')

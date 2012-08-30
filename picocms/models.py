@@ -59,6 +59,9 @@ class CMSModel(models.Model):
         abstract = True
         ordering = ['category__tree_id', 'category__lft', 'position', '-id', 'title']
 
+    class CMSMeta:
+        image_model = None
+
     @models.permalink
     def get_absolute_url(self):
         link = ('picocms-view-detail', [self._meta.app_label, self.__class__.__name__, self.slug])

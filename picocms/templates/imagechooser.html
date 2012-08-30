@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Choose an image</title>
+    <script type="text/javascript" src="{{ admin_path }}/js/jquery.js"></script>
+    <script type="text/javascript" src="{{ admin_path }}/js/jquery.init.js"></script>
+    <script type="text/javascript" src="{{ chosen_path }}/js/chosen.jquery.min.js"></script>
+    <link href="{{ chosen_path }}/css/chosen.css" type="text/css" media="all" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="{{ admin_path }}/css/base.css" />
+    <link rel="stylesheet" type="text/css" href="{{ admin_path }}/css/forms.css" />
+    <script type="text/javascript">
+        django.jQuery(function() {
+            django.jQuery('.chosen-single').chosen().change(function() {
+                update_src(django.jQuery(this).val());
+            });
+        });
+
+        function update_src(src) {
+            var ed = this.opener.tinymce.get(this.name)
+            if (src === '') {
+                if (ed.selection.getNode().nodeName == 'IMG') {
+                    ed.dom.remove(ed.selection.getNode());
+                    ed.execCommand('mceRepaint');
+                }
+                this.close();
+                return;
+            }
+
+            var args = {
+                'src': src.replace(/ /g, '%20')
+            };
+
+
+            el = ed.selection.getNode();
+
+            if (el && el.nodeName == 'IMG') {
+                ed.dom.setAttribs(el, args);
+                ed.execCommand('mceRepaint');
+                ed.focus();
+            } else {
+                ed.execCommand('mceInsertContent', false, ed.dom.createHTML('img', args), {skip_undo : 1});
+                ed.undoManager.add();
+            }
+
+            this.close();
+        }
+
+        function test() {
+            update_src(django.jQuery('#file_url').val());
+        }
+    </script>
+    <style>
+        body {
+            padding:15px;
+        }
+    </style>
+</head>
+<body id="image" style="display: block">
+<H1>INSERT IMAGE</H1>
+<form method=POST  enctype="multipart/form-data" >
+    <br>
+    {% if select_files %}
+    <h3>From CMS File</h3>
+    {{ select_files|safe }}
+    <br><br>
+    <hr>
+    {% endif %}
+    <h3>From URL</h3>
+    <input type=text id='file_url' size=40 placeholder="http://"/>
+    <button onclick="test()">OK</button>
+    <!--
+    <hr>
+
+    <h3>Upload a new file</h3>
+    <input type=file name=fileupload />
+    <hr>
+    <br>
+    -->
+    <p align=center >
+     <br><br>
+     <button onclick="window.close()">CANCEL</button>
+    </p>
+    {% csrf_token %}
+</form>
+
+</body>
+</html>
