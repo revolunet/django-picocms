@@ -4,7 +4,9 @@ from mptt.admin import MPTTModelAdmin
 from mptt.forms import TreeNodeChoiceField
 from django.contrib.admin import SimpleListFilter, DateFieldListFilter
 from django.forms.widgets import SelectMultiple
+from django.forms import ModelForm
 from django.core.urlresolvers import reverse_lazy
+from django.core.exceptions import ValidationError
 import models
 
 #
@@ -29,6 +31,17 @@ class AdminCategoryFilter(SimpleListFilter):
         return queryset
 
 
+class CMSModelForm(ModelForm):
+    """
+        A category is not mandatory in DB but mandatory in admin.
+        This way, deleted categories doesnt affected visible items in the admin
+    """
+    def clean_category(self, *args, **kwargs):
+        if self.cleaned_data["category"] is None:
+            raise ValidationError('Please choose a category')
+        return self.cleaned_data["category"]
+
+
 class CMSModelAdmin(admin.ModelAdmin):
     """ This ModelAdmin adds tinyMce for HTMLField and HTMLBigField.
         We also remove any reference to self in the many to many fields.
@@ -39,6 +52,7 @@ class CMSModelAdmin(admin.ModelAdmin):
     list_filter = (AdminCategoryFilter, 'active', 'anonymous_access', ('created', DateFieldListFilter), ('modified', DateFieldListFilter))
     search_fields = ['category__title', 'title']
     prepopulated_fields = {"slug": ("title",)}
+    form = CMSModelForm
 
     class Media:
         js = (
