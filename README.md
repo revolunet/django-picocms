@@ -36,6 +36,8 @@ in admin.py :
  - `CMSModel` abstract fields : active, anonymous_access, created, modified, modified_by, position, category, title and slug
  - Easy instance rendering. Juste define `modelName.html` template and your instance will use it to render itself with the permalink.
  - Basic `HTMLField` and `HTMLBigField` for your models with tinyMCE
+ - `Chosen` advanced select field for CMSModel foreignkeys in the admin
+ - Ability to insert files in HTMLFields based on custom CMS File Models (eg: images)
  - South support
 
 
