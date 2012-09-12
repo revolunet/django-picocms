@@ -48,9 +48,9 @@ class CMSModelAdmin(admin.ModelAdmin):
         I don't ever want to link to myself, do i ?
         We also add some CMS related filters and search fields
     """
-    list_display = ['title', 'category', 'position', 'active', 'anonymous_access', 'created', 'modified']
+    list_display = ['title', 'category', 'position', 'slug', 'active', 'anonymous_access', 'created', 'modified']
     list_filter = (AdminCategoryFilter, 'active', 'anonymous_access', ('created', DateFieldListFilter), ('modified', DateFieldListFilter))
-    search_fields = ['category__title', 'title']
+    search_fields = ['category__title', 'title', 'slug']
     prepopulated_fields = {"slug": ("title",)}
     form = CMSModelForm
 
