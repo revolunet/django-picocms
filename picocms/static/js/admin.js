@@ -16,7 +16,7 @@ django.jQuery(function() {
         width: 800,
         height:200,
         theme_advanced_buttons1 : "bold,italic,fontsizeselect,underline,separator,justifyleft,justifycenter,justifyright,justifyfull,separator,bullist,numlist,outdent,indent,separator,imagecms,link,unlink,forecolor,backcolor,separator,undo,redo,separator",
-        theme_advanced_buttons2 : "bullist,numlist,outdent,indent,sub,sup,charmap,hr,removeformat,html",
+        theme_advanced_buttons2 : "bullist,numlist,outdent,indent,sub,sup,charmap,hr,removeformat,code",
         theme_advanced_buttons3 : "",
         theme_advanced_toolbar_location : "top",
         theme_advanced_toolbar_align : "left",
