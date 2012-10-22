@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Choose an image</title>
+
     <script type="text/javascript" src="{{ admin_path }}/js/jquery.js"></script>
     <script type="text/javascript" src="{{ admin_path }}/js/jquery.init.js"></script>
     <script type="text/javascript" src="{{ chosen_path }}/js/chosen.jquery.min.js"></script>
@@ -11,43 +12,88 @@
     <script type="text/javascript">
         django.jQuery(function() {
             django.jQuery('.chosen-single').chosen().change(function() {
-                update_src(django.jQuery(this).val());
+                django.jQuery('#file_url').val(django.jQuery(this).val());
+                ImageDialog.getImageData();
             });
         });
 
-        function update_src(src) {
-            var ed = this.opener.tinymce.get(this.name)
-            if (src === '') {
-                if (ed.selection.getNode().nodeName == 'IMG') {
-                    ed.dom.remove(ed.selection.getNode());
-                    ed.execCommand('mceRepaint');
+        var tinymce=null,tinyMCEPopup,tinyMCE;tinyMCEPopup={init:function(){var b=this,a,c;a=b.getWin();tinymce=a.tinymce;tinyMCE=a.tinyMCE;b.editor=tinymce.EditorManager.activeEditor;b.params=b.editor.windowManager.params;b.features=b.editor.windowManager.features;b.dom=b.editor.windowManager.createInstance("tinymce.dom.DOMUtils",document,{ownEvents:true,proxy:tinyMCEPopup._eventProxy});b.dom.bind(window,"ready",b._onDOMLoaded,b);if(b.features.popup_css!==false){b.dom.loadCSS(b.features.popup_css||b.editor.settings.popup_css)}b.listeners=[];b.onInit={add:function(e,d){b.listeners.push({func:e,scope:d})}};b.isWindow=!b.getWindowArg("mce_inline");b.id=b.getWindowArg("mce_window_id");b.editor.windowManager.onOpen.dispatch(b.editor.windowManager,window)},getWin:function(){return(!window.frameElement&&window.dialogArguments)||opener||parent||top},getWindowArg:function(c,b){var a=this.params[c];return tinymce.is(a)?a:b},getParam:function(b,a){return this.editor.getParam(b,a)},getLang:function(b,a){return this.editor.getLang(b,a)},execCommand:function(d,c,e,b){b=b||{};b.skip_focus=1;this.restoreSelection();return this.editor.execCommand(d,c,e,b)},resizeToInnerSize:function(){var a=this;setTimeout(function(){var b=a.dom.getViewPort(window);a.editor.windowManager.resizeBy(a.getWindowArg("mce_width")-b.w,a.getWindowArg("mce_height")-b.h,a.id||window)},10)},executeOnLoad:function(s){this.onInit.add(function(){eval(s)})},storeSelection:function(){this.editor.windowManager.bookmark=tinyMCEPopup.editor.selection.getBookmark(1)},restoreSelection:function(){var a=tinyMCEPopup;if(!a.isWindow&&tinymce.isIE){a.editor.selection.moveToBookmark(a.editor.windowManager.bookmark)}},requireLangPack:function(){var b=this,a=b.getWindowArg("plugin_url")||b.getWindowArg("theme_url");if(a&&b.editor.settings.language&&b.features.translate_i18n!==false&&b.editor.settings.language_load!==false){a+="/langs/"+b.editor.settings.language+"_dlg.js";if(!tinymce.ScriptLoader.isDone(a)){document.write('<script type="text/javascript" src="'+tinymce._addVer(a)+'"><\/script>');tinymce.ScriptLoader.markDone(a)}}},pickColor:function(b,a){this.execCommand("mceColorPicker",true,{color:document.getElementById(a).value,func:function(e){document.getElementById(a).value=e;try{document.getElementById(a).onchange()}catch(d){}}})},openBrowser:function(a,c,b){tinyMCEPopup.restoreSelection();this.editor.execCallback("file_browser_callback",a,document.getElementById(a).value,c,window)},confirm:function(b,a,c){this.editor.windowManager.confirm(b,a,c,window)},alert:function(b,a,c){this.editor.windowManager.alert(b,a,c,window)},close:function(){var a=this;function b(){a.editor.windowManager.close(window);tinymce=tinyMCE=a.editor=a.params=a.dom=a.dom.doc=null}if(tinymce.isOpera){a.getWin().setTimeout(b,0)}else{b()}},_restoreSelection:function(){var a=window.event.srcElement;if(a.nodeName=="INPUT"&&(a.type=="submit"||a.type=="button")){tinyMCEPopup.restoreSelection()}},_onDOMLoaded:function(){var b=tinyMCEPopup,d=document.title,e,c,a;if(b.features.translate_i18n!==false){c=document.body.innerHTML;if(tinymce.isIE){c=c.replace(/ (value|title|alt)=([^"][^\s>]+)/gi,' $1="$2"')}document.dir=b.editor.getParam("directionality","");if((a=b.editor.translate(c))&&a!=c){document.body.innerHTML=a}if((a=b.editor.translate(d))&&a!=d){document.title=d=a}}if(!b.editor.getParam("browser_preferred_colors",false)||!b.isWindow){b.dom.addClass(document.body,"forceColors")}document.body.style.display="";if(tinymce.isIE){document.attachEvent("onmouseup",tinyMCEPopup._restoreSelection);b.dom.add(b.dom.select("head")[0],"base",{target:"_self"})}b.restoreSelection();b.resizeToInnerSize();if(!b.isWindow){b.editor.windowManager.setTitle(window,d)}else{window.focus()}if(!tinymce.isIE&&!b.isWindow){b.dom.bind(document,"focus",function(){b.editor.windowManager.focus(b.id)})}tinymce.each(b.dom.select("select"),function(f){f.onkeydown=tinyMCEPopup._accessHandler});tinymce.each(b.listeners,function(f){f.func.call(f.scope,b.editor)});if(b.getWindowArg("mce_auto_focus",true)){window.focus();tinymce.each(document.forms,function(g){tinymce.each(g.elements,function(f){if(b.dom.hasClass(f,"mceFocus")&&!f.disabled){f.focus();return false}})})}document.onkeyup=tinyMCEPopup._closeWinKeyHandler},_accessHandler:function(a){a=a||window.event;if(a.keyCode==13||a.keyCode==32){var b=a.target||a.srcElement;if(b.onchange){b.onchange()}return tinymce.dom.Event.cancel(a)}},_closeWinKeyHandler:function(a){a=a||window.event;if(a.keyCode==27){tinyMCEPopup.close()}},_eventProxy:function(a){return function(b){tinyMCEPopup.dom.events.callNativeHandler(a,b)}}};tinyMCEPopup.init();
+
+
+        var ImageDialog = {
+            preInit : function() {},
+
+            init : function() {
+                var f = document.forms[0], ed = tinyMCEPopup.editor;
+
+                e = ed.selection.getNode();
+
+                if (e.nodeName == 'IMG') {
+                    f.file_url.value = django.jQuery(e).attr('src');
+                    f.file_width.value = django.jQuery(e).attr('width');
+                    f.file_height.value = django.jQuery(e).attr('height');
                 }
-                this.close();
-                return;
+            },
+
+            update: function() {
+                var form = document.forms[0];
+                    src = form.file_url.value,
+                    width = form.file_width.value,
+                    height = form.file_height.value;
+
+                var ed = window.opener.tinymce.get(window.name)
+                if (src === '') {
+                    if (ed.selection.getNode().nodeName == 'IMG') {
+                        ed.dom.remove(ed.selection.getNode());
+                        ed.execCommand('mceRepaint');
+                    }
+                    window.close();
+                    return;
+                }
+
+                var args = {
+                    'src': src.replace(/ /g, '%20'),
+                    'width' : width,
+                    'height' : height
+                };
+
+                el = ed.selection.getNode();
+
+                if (el && el.nodeName == 'IMG') {
+                    ed.dom.setAttribs(el, args);
+                    ed.execCommand('mceRepaint');
+                    ed.focus();
+                } else {
+                    ed.execCommand('mceInsertContent', false, ed.dom.createHTML('img', args), {skip_undo : 1});
+                    ed.undoManager.add();
+                }
+
+                window.close();
+            },
+
+            resetImageData : function() {
+                var f = document.forms[0];
+                f.file_width.value = f.file_height.value = "";
+            },
+
+            updateImageData : function() {
+                var f = document.forms[0], t = ImageDialog;
+                f.file_width.value = t.preloadImg.width;
+                f.file_height.value = t.preloadImg.height;
+            },
+
+            getImageData : function() {
+                var f = document.forms[0];
+                this.preloadImg = new Image();
+                this.preloadImg.onload = this.updateImageData;
+                this.preloadImg.onerror = this.resetImageData;
+                this.preloadImg.src = tinyMCEPopup.editor.documentBaseURI.toAbsolute(f.file_url.value);
             }
+        };
 
-            var args = {
-                'src': src.replace(/ /g, '%20')
-            };
+        ImageDialog.preInit();
+        tinyMCEPopup.onInit.add(ImageDialog.init, ImageDialog);
 
-
-            el = ed.selection.getNode();
-
-            if (el && el.nodeName == 'IMG') {
-                ed.dom.setAttribs(el, args);
-                ed.execCommand('mceRepaint');
-                ed.focus();
-            } else {
-                ed.execCommand('mceInsertContent', false, ed.dom.createHTML('img', args), {skip_undo : 1});
-                ed.undoManager.add();
-            }
-
-            this.close();
-        }
-
-        function test() {
-            update_src(django.jQuery('#file_url').val());
-        }
     </script>
     <style>
         body {
@@ -56,9 +102,9 @@
     </style>
 </head>
 <body id="image" style="display: block">
-<H1>INSERT IMAGE</H1>
+<H1 style='margin:0;padding:0'>INSERT IMAGE</H1>
 <form method=POST  enctype="multipart/form-data" >
-    <br>
+  
     {% if select_files %}
     <h3>From CMS File</h3>
     {{ select_files|safe }}
@@ -66,18 +112,14 @@
     <hr>
     {% endif %}
     <h3>From URL</h3>
-    <input type=text id='file_url' size=40 placeholder="http://"/>
-    <button onclick="test()">OK</button>
-    <!--
-    <hr>
+    <input type=text id='file_url' name='file_url' size=80 placeholder="http://" onchange="ImageDialog.getImageData()"/>
+    <br><br>
+    Dimensions : <input type=text id='file_width' name='file_width'size=5 placeholder=""/>px x <input type=text id='file_height' name='file_height' size=5 placeholder=""/>px<br>
 
-    <h3>Upload a new file</h3>
-    <input type=file name=fileupload />
-    <hr>
-    <br>
-    -->
     <p align=center >
-     <br><br>
+    <br>
+     <button onclick="ImageDialog.update()">OK</button>
+     &nbsp;&nbsp;&nbsp;&nbsp;
      <button onclick="window.close()">CANCEL</button>
     </p>
     {% csrf_token %}

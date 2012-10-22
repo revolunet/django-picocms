@@ -1446,8 +1446,8 @@
 
 			ed.windowManager.open({
 				url : this.imageChoooserUrl,
-				width : 355 + parseInt(ed.getLang('advanced.image_delta_width', 0)),
-				height : 275 + parseInt(ed.getLang('advanced.image_delta_height', 0)),
+				width : 450 + parseInt(ed.getLang('advanced.image_delta_width', 0)),
+				height : 300 + parseInt(ed.getLang('advanced.image_delta_height', 0)),
 				inline : true,
 				name : ed.id 
 			}, {
