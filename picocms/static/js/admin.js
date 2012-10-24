@@ -12,12 +12,7 @@ django.jQuery(function() {
             theme_advanced_buttons3 : "",
             theme_advanced_toolbar_location : "top",
             theme_advanced_toolbar_align : "left",
-            theme_advanced_resizing : true,
-            oninit: function(editor) {
-                 setTimeout(function() {
-                    editor.execCommand('mceAutoResize', false, undefined, {skip_focus: true, skip_undo: true});
-                }, 1);
-            }
+            theme_advanced_resizing : true
         };
         return django.jQuery.extend({}, tinyMceConfig, customConfig || {});
 
