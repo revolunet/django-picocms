@@ -1,1 +1,1 @@
-VERSION = (0, 65, '+dev')
+VERSION = (0, 66, '+dev')
