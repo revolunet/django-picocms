@@ -54,7 +54,7 @@ in admin.py :
  - `CMSMeta` options:
      - `root_category` : when editing this object in the admin, categories will be this category or its descendants. Specify a string like `news` or `news/frontpage`.
      - `image_model`: specify any model with a `file` attribute that will be used for the image picker in the admin.
-
+ - `publics` manager : will return all active items, filtered by root_category if any
 
 ## Todo :
 

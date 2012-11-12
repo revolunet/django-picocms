@@ -39,6 +39,17 @@ class ActiveModelManager(models.Manager):
         return qs
 
 
+class PublicModelManager(ActiveModelManager):
+    """ custom manager for public models """
+    def get_query_set(self, *args, **kwargs):
+        filters = {
+            'active': True
+        }
+        if getattr(self.model.CMSMeta, 'root_category', None):
+            filters['category__in'] = self.model.get_categories(),
+        return super(PublicModelManager, self).get_query_set(*args, **kwargs).filter(**filters)
+
+
 class CMSModel(models.Model):
     """ Abstract model with generic fields to handle content management in categories.
         Any model inheriting from
@@ -54,6 +65,7 @@ class CMSModel(models.Model):
     title = models.CharField(max_length=100)
 
     objects = ActiveModelManager()
+    publics = PublicModelManager()
 
     class Meta:
         abstract = True
@@ -91,6 +103,22 @@ class CMSModel(models.Model):
         """ return entry associated response """
         instance = cls._get_instance(request, slug)
         return HttpResponse(instance.render(request))
+
+    @classmethod
+    def get_root_category(cls):
+        """ the model root category """
+        if getattr(cls.CMSMeta, 'root_category', None):
+            return CMSCategory.objects.get(title=cls.CMSMeta.root_category)
+        return None
+
+    @classmethod
+    def get_categories(cls, children=None, include_self=True):
+        """ all model subcategories by children if any """
+        qs = cls.get_root_category()
+        if children:
+            # filter by context
+            qs = qs.get_children().get(title__iexact=children)
+        return qs.get_descendants(include_self=include_self)
 
     def __unicode__(self):
         return self.title
