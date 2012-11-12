@@ -84,6 +84,7 @@ class CMSModelAdmin(admin.ModelAdmin):
         return form
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
+        # set chosen as default widget for M2M
         kwargs['widget'] = SelectMultiple(attrs={'class': 'chosen-multiple', 'style': 'width:300px'})
         kwargs['help_text'] = ''
         return super(CMSModelAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
@@ -96,6 +97,19 @@ class CMSModelAdmin(admin.ModelAdmin):
                 and not isinstance(db_field, TreeForeignKey) \
                 and not db_field.name in self.raw_id_fields:
             queryset = db_field.rel.to.objects.all()
+            if issubclass(models.CMSCategory, db_field.rel.to):
+                # filter the available categories for this model if defined in CMSMeta
+                root_category = getattr(self.model.CMSMeta, 'root_category', None)
+                if root_category:
+                    root = models.CMSCategory.objects
+                    parts = root_category.split('/')
+                    root = root.filter(title=parts[0]).order_by('level')
+                    if len(parts) > 1:
+                        for part in parts[1:]:
+                            if root:
+                                root = root[0].get_descendants().filter(title=part).order_by('level')
+                    if root:
+                        queryset = root[0].get_descendants(include_self=True)
             defaults = dict(form_class=TreeNodeChoiceField, queryset=queryset)
             defaults.update(kwargs)
             kwargs = defaults
