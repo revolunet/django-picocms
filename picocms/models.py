@@ -46,7 +46,9 @@ class PublicModelManager(ActiveModelManager):
             'active': True
         }
         if getattr(self.model.CMSMeta, 'root_category', None):
-            filters['category__in'] = self.model.get_categories(),
+            sub_categories = self.model.get_categories()
+            if sub_categories:
+                filters['category__in'] = self.model.get_categories()
         return super(PublicModelManager, self).get_query_set(*args, **kwargs).filter(**filters)
 
 
@@ -107,18 +109,31 @@ class CMSModel(models.Model):
     @classmethod
     def get_root_category(cls):
         """ the model root category """
-        if getattr(cls.CMSMeta, 'root_category', None):
-            return CMSCategory.objects.get(title=cls.CMSMeta.root_category)
+        root_category = getattr(cls.CMSMeta, 'root_category', None)
+        if root_category:
+            parts = root_category.split('/')
+            root = CMSCategory.objects.filter(title=parts[0]).order_by('level')
+            if root and len(parts) > 1:
+                # filter progressively if root category is a sub-category
+                for part in parts[1:]:
+                    if root:
+                        root = root[0].get_descendants().filter(title=part).order_by('level')
+            if root:
+                return root[0]
+
         return None
 
     @classmethod
     def get_categories(cls, children=None, include_self=True):
         """ all model subcategories by children if any """
         qs = cls.get_root_category()
-        if children:
-            # filter by context
-            qs = qs.get_children().get(title__iexact=children)
-        return qs.get_descendants(include_self=include_self)
+        if qs:
+            if children:
+                # filter by context
+                qs = qs.get_children().get(title__iexact=children)
+            qs = qs.get_descendants(include_self=include_self)
+            return qs
+        return CMSCategory.objects.all()
 
     def __unicode__(self):
         return self.title
