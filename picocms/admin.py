@@ -1,12 +1,15 @@
 from django.contrib import admin
 from django.forms.models import ModelMultipleChoiceField
-from mptt.admin import MPTTModelAdmin
-from mptt.forms import TreeNodeChoiceField
+from django.db.models import get_models
 from django.contrib.admin import SimpleListFilter, DateFieldListFilter
 from django.forms.widgets import SelectMultiple
 from django.forms import ModelForm
 from django.core.urlresolvers import reverse_lazy
 from django.core.exceptions import ValidationError
+
+from mptt.admin import MPTTModelAdmin
+from mptt.forms import TreeNodeChoiceField
+
 import models
 
 #
@@ -108,7 +111,17 @@ class CMSModelAdmin(admin.ModelAdmin):
 
 class CategoryAdmin(MPTTModelAdmin):
     """ MPTT based Admin class to display and manage CMS categories """
-    list_display = ['title', 'position']
+    list_display = ['title', 'item_count', 'position']
+
+    def item_count(self, obj):
+        # todo : use content types instead
+        descendants = obj.get_descendants(include_self=True).values('pk')
+        related_count = 0
+        for model in get_models():
+            if hasattr(model, 'category'):
+                if model.category.field.rel.to is models.CMSCategory:
+                    related_count += model.objects.filter(category__in=descendants).count()
+        return related_count
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(CategoryAdmin, self).get_form(request, obj, **kwargs)
