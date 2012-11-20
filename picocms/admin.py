@@ -2,11 +2,11 @@ from django.contrib import admin
 from django.forms.models import ModelMultipleChoiceField
 from django.db.models import get_models
 from django.contrib.admin import SimpleListFilter, DateFieldListFilter
+from django.contrib.contenttypes.models import ContentType
 from django.forms.widgets import SelectMultiple
 from django.forms import ModelForm
 from django.core.urlresolvers import reverse_lazy
 from django.core.exceptions import ValidationError
-
 from mptt.admin import MPTTModelAdmin
 from mptt.forms import TreeNodeChoiceField
 
@@ -113,14 +113,24 @@ class CategoryAdmin(MPTTModelAdmin):
     """ MPTT based Admin class to display and manage CMS categories """
     list_display = ['title', 'item_count', 'position']
 
-    def item_count(self, obj):
-        # todo : use content types instead
-        descendants = obj.get_descendants(include_self=True).values('pk')
-        related_count = 0
+    def get_descendant_models(self, obj, subcategories=False):
+        # list of queryset for descendants models
+        # todo : use content types instead ?
+        qs = []
+        descendants = obj.get_descendants(include_self=True)
+        descendants_pks = descendants.values('pk')
+        if subcategories:
+            qs.append(descendants.exclude(pk=obj.pk))
         for model in get_models():
             if hasattr(model, 'category'):
                 if model.category.field.rel.to is models.CMSCategory:
-                    related_count += model.objects.filter(category__in=descendants).count()
+                    qs.append(model.objects.filter(category__in=descendants_pks))
+        return qs
+
+    def item_count(self, obj):
+        related_count = 0
+        for items in self.get_descendant_models(obj):
+            related_count += items.count()
         return related_count
 
     def get_form(self, request, obj=None, **kwargs):
@@ -129,5 +139,21 @@ class CategoryAdmin(MPTTModelAdmin):
             form.base_fields['parent'].queryset = form.base_fields['parent'].queryset.exclude(pk=obj.pk)
         return form
 
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        """ add related objects in context to display them"""
+        LIMIT = 50
+        extra_context = extra_context or {}
+        extra_context['descendants'] = {}
+        obj = self.model.objects.get(pk=object_id)
+        for items in self.get_descendant_models(obj, subcategories=True):
+            count = items.count()
+            if count > 0:
+                extra_context['descendants'][items.model.__name__] = {
+                    'items': items[:LIMIT],
+                    'count': count,
+                    'list_url': reverse_lazy('admin:%s_changelist' % (items.model._meta.db_table))
+                }
+        return super(CategoryAdmin, self).change_view(request, object_id,
+            form_url, extra_context=extra_context)
 
 admin.site.register(models.CMSCategory, CategoryAdmin)

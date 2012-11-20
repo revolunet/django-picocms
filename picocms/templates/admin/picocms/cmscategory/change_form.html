@@ -1,0 +1,29 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+{% block content %}
+{{ block.super }}
+{% for model, details in descendants.items %}
+    {% if details.count > 0 %}
+        <div class="module">
+            <table width="100%">
+                <caption><a href="{{ details.list_url }}" class="section">{{ model|title }}{{ details.count|pluralize }} ({{ details.count }}) </a></caption>
+                <tbody>
+                    {% for item in details.items %}
+                        <tr>
+                            <th scope="row"><a href="{{ details.list_url }}{{ item.pk }}/">{{ item.title }}</a></th>
+                            <th scope="row">{{ item.slug }}</th>
+                        </tr>
+                    {% endfor %}
+                    {% if details.count > details.items|length %}
+                        <tr>
+                            <th scope="row"><a href="{{ details.list_url }}">see all {{ details.count }} {{ model|title }}{{ details.count|pluralize }}...</a></th>
+                            
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endfor %}
+
+{% endblock %}
