@@ -1,7 +1,8 @@
 django-picocms
 ================
 
-This simple CMS can manage any model and organise them in various categories.
+This simple CMS can help organise your models into categories and adds HTMLFields + image upload capabilities.
+
 
 ## Typical usage :
 
