@@ -64,5 +64,8 @@ in admin.py :
  - template tags for HTML fragment
  - move to CBV style (or not)
 
+## Licence :
+
+ - This code is licensed under the BSD licence, and tinyMCE has LGPL licence
 
  [0]: https://github.com/django-mptt/django-mptt/
