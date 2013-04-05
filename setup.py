@@ -23,7 +23,7 @@ setup(
                    'Environment :: Web Environment',
                    'Framework :: Django',
                    'Intended Audience :: Developers',
-                   'License :: OSI Approved :: BSD License',
+                   'License :: OSI Approved :: BSD',
                    'Operating System :: OS Independent',
                    'Programming Language :: Python',
                    'Topic :: Utilities'],
