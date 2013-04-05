@@ -64,7 +64,7 @@ class CMSModel(models.Model):
     position = models.IntegerField(default=0)
     category = models.ForeignKey(CMSCategory, null=True, blank=True, on_delete=models.SET_NULL)
     slug = models.SlugField(db_index=True, unique=True, verbose_name=u'Unique url code')
-    title = models.CharField(max_length=200)
+    title = models.TextField()
 
     objects = ActiveModelManager()
     publics = PublicModelManager()
